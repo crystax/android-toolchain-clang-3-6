@@ -365,7 +365,10 @@ protected:
     Builder.defineMacro("__gnu_linux__");
     Builder.defineMacro("__ELF__");
     if (Triple.getEnvironment() == llvm::Triple::Android)
+    {
       Builder.defineMacro("__ANDROID__", "1");
+      Builder.defineMacro("__CRYSTAX__", "1");
+    }
     if (Opts.POSIXThreads)
       Builder.defineMacro("_REENTRANT");
     if (Opts.CPlusPlus)
@@ -6434,6 +6437,7 @@ AndroidNDKTargetInfo::AndroidNDKTargetInfo(const llvm::Triple& Triple)
 void AndroidNDKTargetInfo::getArchDefines(const LangOptions& Opts,
                                          MacroBuilder& Builder) const {
   Builder.defineMacro("__ANDROID__");
+  Builder.defineMacro("__CRYSTAX__");
 }
 
 void AndroidNDKTargetInfo::getTargetDefines(const LangOptions& Opts,
