@@ -7749,6 +7749,7 @@ void gnutools::Link::ConstructJob(Compilation &C, const JobAction &JA,
               CmdArgs.push_back("-lcrystax");
               CmdArgs.push_back("-Bdynamic");
           }
+          CmdArgs.push_back("-lstdc++");
           CmdArgs.push_back("-lm");
       }
 
