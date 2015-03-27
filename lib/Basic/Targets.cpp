@@ -6453,7 +6453,6 @@ void AndroidNDKTargetInfo::getTargetDefines(const LangOptions& Opts,
                                          MacroBuilder& Builder) const {
   DefineStd(Builder, "unix", Opts);
   DefineStd(Builder, "linux", Opts);
-  Builder.defineMacro("__gnu_linux__");
   Builder.defineMacro("__ELF__");
   Builder.defineMacro("__LITTLE_ENDIAN__");
   if (Opts.POSIXThreads)
