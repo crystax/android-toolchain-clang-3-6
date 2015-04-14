@@ -362,12 +362,15 @@ protected:
     // Linux defines; list based off of gcc output
     DefineStd(Builder, "unix", Opts);
     DefineStd(Builder, "linux", Opts);
-    Builder.defineMacro("__gnu_linux__");
     Builder.defineMacro("__ELF__");
     if (Triple.getEnvironment() == llvm::Triple::Android)
     {
       Builder.defineMacro("__ANDROID__", "1");
       Builder.defineMacro("__CRYSTAX__", "1");
+    }
+    else
+    {
+      Builder.defineMacro("__gnu_linux__");
     }
     if (Opts.POSIXThreads)
       Builder.defineMacro("_REENTRANT");
