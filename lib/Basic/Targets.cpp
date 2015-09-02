@@ -6629,6 +6629,33 @@ const Builtin::Info XCoreTargetInfo::BuiltinInfo[] = {
 };
 } // end anonymous namespace.
 
+namespace {
+// x86_32 Android target
+class AndroidX86_32TargetInfo : public LinuxTargetInfo<X86_32TargetInfo> {
+public:
+  AndroidX86_32TargetInfo(const llvm::Triple &Triple)
+      : LinuxTargetInfo<X86_32TargetInfo>(Triple) {
+    SuitableAlign = 32;
+    LongDoubleWidth = 64;
+    LongDoubleFormat = &llvm::APFloat::IEEEdouble;
+  }
+};
+} // end anonymous namespace
+
+namespace {
+// x86_64 Android target
+class AndroidX86_64TargetInfo : public LinuxTargetInfo<X86_64TargetInfo> {
+public:
+  AndroidX86_64TargetInfo(const llvm::Triple &Triple)
+      : LinuxTargetInfo<X86_64TargetInfo>(Triple) {
+    LongDoubleFormat = &llvm::APFloat::IEEEquad;
+  }
+
+  bool useFloat128ManglingForLongDouble() const override {
+    return true;
+  }
+};
+} // end anonymous namespace
 
 //===----------------------------------------------------------------------===//
 // Driver code
@@ -6915,8 +6942,14 @@ static TargetInfo *AllocateTarget(const llvm::Triple &Triple) {
       return new DarwinI386TargetInfo(Triple);
 
     switch (os) {
-    case llvm::Triple::Linux:
-      return new LinuxTargetInfo<X86_32TargetInfo>(Triple);
+    case llvm::Triple::Linux: {
+      switch (Triple.getEnvironment()) {
+      case llvm::Triple::Android:
+        return new AndroidX86_32TargetInfo(Triple);
+      default:
+        return new LinuxTargetInfo<X86_32TargetInfo>(Triple);
+      }
+    }
     case llvm::Triple::DragonFly:
       return new DragonFlyBSDTargetInfo<X86_32TargetInfo>(Triple);
     case llvm::Triple::NetBSD:
@@ -6961,8 +6994,14 @@ static TargetInfo *AllocateTarget(const llvm::Triple &Triple) {
       return new DarwinX86_64TargetInfo(Triple);
 
     switch (os) {
-    case llvm::Triple::Linux:
-      return new LinuxTargetInfo<X86_64TargetInfo>(Triple);
+    case llvm::Triple::Linux: {
+      switch (Triple.getEnvironment()) {
+      case llvm::Triple::Android:
+        return new AndroidX86_64TargetInfo(Triple);
+      default:
+        return new LinuxTargetInfo<X86_64TargetInfo>(Triple);
+      }
+    }
     case llvm::Triple::DragonFly:
       return new DragonFlyBSDTargetInfo<X86_64TargetInfo>(Triple);
     case llvm::Triple::NetBSD:
