@@ -1776,7 +1776,7 @@ static bool findMIPSMultilibs(const llvm::Triple &TargetTriple, StringRef Path,
       .flag("+mnan=2008");
 
     FSFMipsMultilibs = MultilibSet()
-      .Either(MArchMips32, MArchMicroMips, 
+      .Either(MArchMips32, MArchMicroMips,
               MArchMips64r2, MArchMips64, MArchDefault)
       .Maybe(UCLibc)
       .Maybe(Mips16)
@@ -2608,7 +2608,7 @@ FreeBSD::GetCXXStdlibType(const ArgList &Args) const {
     getDriver().Diag(diag::err_drv_invalid_stdlib_name)
       << A->getAsString(Args);
   }
-  if (getTriple().getOSMajorVersion() >= 10) 
+  if (getTriple().getOSMajorVersion() >= 10)
     return ToolChain::CST_Libcxx;
   return ToolChain::CST_Libstdcxx;
 }
@@ -3150,14 +3150,13 @@ Linux::Linux(const Driver &D, const llvm::Triple &Triple, const ArgList &Args)
                      Multilib.gccSuffix()),
                     Paths);
 
-    if (IsAndroid) {
+    if (IsAndroid && (Arch != llvm::Triple::mips64el)) {
       // Add libstdc++ path
       const std::string LibstdcppPath = getDriver().Dir + "/../" +
                                         GCCTriple.str() + "/lib" +
                                         Multilib.gccSuffix();
       addPathIfExists(LibstdcppPath, Paths);
     }
-
     // GCC cross compiling toolchains will install target libraries which ship
     // as part of the toolchain under <prefix>/<triple>/<libdir> rather than as
     // any part of the GCC installation in
@@ -3192,6 +3191,14 @@ Linux::Linux(const Driver &D, const llvm::Triple &Triple, const ArgList &Args)
     if (StringRef(LibPath).startswith(SysRoot)) {
       addPathIfExists(LibPath + "/" + MultiarchTriple, Paths);
       addPathIfExists(LibPath + "/../" + OSLibDir, Paths);
+    }
+
+    if (IsAndroid && (Arch == llvm::Triple::mips64el)) {
+      // Add libstdc++ path
+      const std::string LibstdcppPath = getDriver().Dir + "/../" +
+                                        GCCTriple.str() + "/lib" +
+                                        Multilib.gccSuffix();
+      addPathIfExists(LibstdcppPath, Paths);
     }
   }
 
